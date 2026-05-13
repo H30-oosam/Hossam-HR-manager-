@@ -32,7 +32,7 @@ const KPICard = ({ title, value, change, icon: Icon, trend }: any) => {
   return (
     <div className="glass-card p-6 group hover:translate-y-[-4px] transition-all duration-300">
       <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-xl bg-white/50 text-indigo-600 shadow-sm shadow-indigo-100 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300`}>
+        <div className={`p-3 rounded-xl bg-white/5 text-indigo-400 border border-white/10 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300`}>
           <Icon className="w-6 h-6" />
         </div>
         <div className={`flex items-center gap-1 text-[10px] font-black ${trend === 'up' ? 'text-emerald-600 bg-emerald-100/50' : 'text-rose-600 bg-rose-100/50'} px-2.5 py-1 rounded-full uppercase tracking-widest`}>
@@ -42,7 +42,7 @@ const KPICard = ({ title, value, change, icon: Icon, trend }: any) => {
       </div>
       <div>
         <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">{title}</p>
-        <p className="text-3xl font-black text-slate-900 italic tracking-tighter uppercase">{value}</p>
+        <p className="text-3xl font-black text-white italic tracking-tighter uppercase">{value}</p>
       </div>
     </div>
   );
@@ -58,7 +58,7 @@ const Dashboard = () => {
     <div className="space-y-12 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-black text-indigo-950 tracking-tighter uppercase italic">
+          <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">
             {isRTL ? 'لوحة قيادة الشركة' : 'Enterprise Command'}
           </h1>
           <p className="text-slate-500 font-bold text-sm mt-1">
@@ -108,10 +108,10 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white/60 backdrop-blur-xl rounded-[3rem] border border-white/80 p-10 shadow-2xl shadow-indigo-200/20 transition-all">
+        <div className="lg:col-span-2 bg-white/5 backdrop-blur-2xl rounded-[3rem] border border-white/10 p-10 shadow-2xl transition-all">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h3 className="text-xl font-black text-slate-900 italic tracking-tighter uppercase">
+              <h3 className="text-xl font-black text-white italic tracking-tighter uppercase">
                 {isRTL ? 'تحليلات الحضور' : 'Attendance Analytics'}
               </h3>
               <p className="text-xs text-slate-400 font-black uppercase tracking-widest">{isRTL ? 'اتجاه آخر 30 يومًا' : 'Last 30 Days trend'}</p>
@@ -173,8 +173,8 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1 bg-white/60 backdrop-blur-xl rounded-[3rem] border border-white/80 p-10 shadow-2xl shadow-indigo-200/20">
-          <h3 className="text-lg font-black text-slate-900 italic tracking-tighter uppercase mb-8">
+        <div className="lg:col-span-1 bg-white/5 backdrop-blur-2xl rounded-[3rem] border border-white/10 p-10 shadow-2xl">
+          <h3 className="text-lg font-black text-white italic tracking-tighter uppercase mb-8">
             {isRTL ? 'قمع التوظيف' : 'Talent Pipeline'}
           </h3>
           <div className="h-64 w-full flex items-center justify-center relative">
@@ -188,25 +188,25 @@ const Dashboard = () => {
                   dataKey="value"
                 >
                   {recruitmentData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} cornerRadius={10} />
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
                 <Tooltip />
               </PieChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-               <span className="text-2xl font-black text-slate-900 italic">630</span>
+               <span className="text-2xl font-black text-white italic">630</span>
                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Candidates</span>
             </div>
           </div>
           <div className="mt-8 space-y-3">
              {recruitmentData.map((item, index) => (
-               <div key={item.name} className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl">
+               <div key={item.name} className="flex items-center justify-between p-3 bg-white/5 border border-white/5 rounded-2xl">
                   <div className="flex items-center gap-3">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[index] }}></div>
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.name}</span>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.name}</span>
                   </div>
-                  <span className="text-sm font-bold text-slate-900">{item.value}</span>
+                  <span className="text-sm font-bold text-white">{item.value}</span>
                </div>
              ))}
           </div>

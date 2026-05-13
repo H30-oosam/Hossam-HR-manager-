@@ -12,7 +12,7 @@ import { logActivity, ActivityType } from '../services/activityService';
 interface SystemUser {
   id: string;
   email: string;
-  role: 'admin' | 'manager' | 'employee';
+  role: 'super-admin' | 'admin' | 'manager' | 'employee';
   displayName: string;
 }
 
@@ -50,6 +50,7 @@ const Users = () => {
 
   const getRoleIcon = (role: string) => {
     switch (role) {
+      case 'super-admin': return <ShieldAlert className="w-4 h-4 text-purple-500" />;
       case 'admin': return <ShieldAlert className="w-4 h-4 text-rose-500" />;
       case 'manager': return <ShieldCheck className="w-4 h-4 text-emerald-500" />;
       default: return <Shield className="w-4 h-4 text-slate-400" />;
@@ -99,11 +100,15 @@ const Users = () => {
                       value={user.role}
                       onChange={(e) => updateRole(user.id, e.target.value)}
                       className={`px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider outline-none border-none ring-0 ${
-                        user.role === 'admin' ? 'bg-rose-50 text-rose-600' : 
-                        user.role === 'manager' ? 'bg-emerald-50 text-emerald-600' : 
-                        'bg-slate-100 text-slate-500'
+                        user.role === 'super-admin' ? 'bg-purple-950/20 text-purple-400' : 
+                        user.role === 'admin' ? 'bg-rose-500/10 text-rose-400' : 
+                        user.role === 'manager' ? 'bg-emerald-500/10 text-emerald-400' : 
+                        'bg-white/5 text-slate-400'
                       }`}
                     >
+                      {currentUser?.role === 'super-admin' && (
+                        <option value="super-admin">Super Admin</option>
+                      )}
                       <option value="admin">Admin</option>
                       <option value="manager">Manager</option>
                       <option value="employee">Employee</option>

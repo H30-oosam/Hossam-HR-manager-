@@ -8,7 +8,7 @@
         "uid": { "type": "string" },
         "email": { "type": "string" },
         "displayName": { "type": "string" },
-        "role": { "type": "string", "enum": ["admin", "hr", "manager", "employee"] },
+        "role": { "type": "string", "enum": ["super-admin", "admin", "hr", "manager", "employee"] },
         "createdAt": { "type": "string", "format": "date-time" },
         "updatedAt": { "type": "string", "format": "date-time" }
       },

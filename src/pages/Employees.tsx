@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Users, Search, Filter, Plus, MoreVertical, Edit2, Trash2, 
   Mail, Phone, MapPin, BadgeCheck, Clock, X, Upload, Camera, Loader2,
-  Calendar, Briefcase, Building2, UserCircle, Shield, Award, LineChart
+  Calendar, Briefcase, Building2, UserCircle, Shield, Award, LineChart, Wallet
 } from 'lucide-react';
 import { collection, query, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../firebase';
@@ -193,7 +193,7 @@ const Employees = () => {
     <div className="space-y-6 pb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-2xl font-black text-indigo-950 tracking-tighter uppercase italic">
+          <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">
             {isRTL ? 'إدارة الموظفين والملفات' : 'Employee & File Management'}
           </h1>
           <p className="text-gray-500 font-bold text-sm">
@@ -204,14 +204,14 @@ const Employees = () => {
         <div className="flex flex-wrap items-center gap-3">
           <button 
             onClick={handleImportExcel}
-            className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-2xl hover:bg-slate-50 transition-all shadow-sm group active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-2xl hover:bg-white/10 transition-all shadow-sm group active:scale-95"
           >
             <Upload className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform" />
             <span className="font-bold">{isRTL ? 'استيراد Excel' : 'Import'}</span>
           </button>
           <button 
             onClick={() => exportToExcel(employees, 'Employees_List', 'Employees')}
-            className="flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-2xl hover:bg-slate-50 transition-all shadow-sm group active:scale-95"
+            className="flex items-center gap-2 px-6 py-3 bg-white/5 border border-white/10 text-white rounded-2xl hover:bg-white/10 transition-all shadow-sm group active:scale-95"
           >
             <FileSpreadsheet className="w-5 h-5 text-emerald-600 group-hover:scale-110 transition-transform" />
             <span className="font-bold">{isRTL ? 'تصدير Excel' : 'Export'}</span>
@@ -226,7 +226,7 @@ const Employees = () => {
         </div>
       </div>
 
-      <div className="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white/80 shadow-2xl shadow-indigo-200/20 overflow-hidden">
+      <div className="bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden">
         {/* ... (search and filters) */}
         
         <div className="p-6 border-b border-white/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -257,7 +257,7 @@ const Employees = () => {
             </div>
           ) : (
             <table className="w-full text-left border-separate border-spacing-0">
-              <thead className="sticky top-0 z-20 bg-slate-50/95 backdrop-blur-md shadow-sm">
+              <thead className="sticky top-0 z-20 bg-slate-900/40 backdrop-blur-md">
                 <tr>
                   <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest border-b border-white/40 first:rounded-tl-[1.5rem]">{isRTL ? 'الموظف' : 'Employee'}</th>
                   <th className="px-6 py-5 text-xs font-black text-slate-400 uppercase tracking-widest border-b border-white/40">{isRTL ? 'القسم' : 'Department'}</th>
@@ -269,7 +269,7 @@ const Employees = () => {
               </thead>
               <tbody className="divide-y divide-white/20">
                 {filteredEmployees.map((employee) => (
-                  <tr key={employee.id} className="hover:bg-indigo-50/40 transition-colors group odd:bg-white/40 even:bg-slate-50/40">
+                  <tr key={employee.id} className="hover:bg-white/5 transition-colors group odd:bg-white/5 even:bg-transparent">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div 
                         className="flex items-center gap-4 cursor-pointer group/profile"
@@ -283,7 +283,7 @@ const Employees = () => {
                           </div>
                         )}
                         <div>
-                          <div className="text-sm font-black text-slate-900 group-hover/profile:text-indigo-600 transition-colors">{employee.firstName} {employee.lastName}</div>
+                          <div className="text-sm font-black text-white group-hover/profile:text-indigo-400 transition-colors">{employee.firstName} {employee.lastName}</div>
                           <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1.5 mt-0.5">
                             <BadgeCheck className="w-3 h-3 text-indigo-500" />
                             {employee.position}
@@ -292,7 +292,7 @@ const Employees = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full inline-block">
+                      <div className="text-sm font-bold text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full inline-block border border-indigo-500/20">
                         {employee.departmentId || 'N/A'}
                       </div>
                     </td>
@@ -313,7 +313,7 @@ const Employees = () => {
                         {employee.status === 'active' ? (isRTL ? 'نشط' : 'Active') : (isRTL ? 'في إجازة' : 'On Leave')}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white/40 font-bold">
                       {employee.hireDate}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -351,10 +351,10 @@ const Employees = () => {
             className="fixed inset-0 bg-slate-900/10 backdrop-blur-sm z-[110]"
             onClick={() => setSelectedProfile(null)}
           ></div>
-          <div className={`fixed top-0 ${isRTL ? 'left-0' : 'right-0'} h-full w-full max-w-xl bg-white shadow-2xl z-[120] overflow-y-auto animate-in ${isRTL ? 'slide-in-from-left' : 'slide-in-from-right'} duration-300`}>
-            <div className="sticky top-0 bg-white/80 backdrop-blur-md border-b p-8 flex items-center justify-between z-10">
+          <div className={`fixed top-0 ${isRTL ? 'left-0' : 'right-0'} h-full w-full max-w-xl bg-slate-950/80 backdrop-blur-3xl shadow-2xl z-[120] overflow-y-auto animate-in ${isRTL ? 'slide-in-from-left' : 'slide-in-from-right'} duration-300 border-s border-white/5`}>
+            <div className="sticky top-0 bg-white/5 backdrop-blur-md border-b border-white/10 p-8 flex items-center justify-between z-10">
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 bg-indigo-600 rounded-[1.5rem] flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-indigo-200">
+                <div className="w-16 h-16 bg-indigo-600 rounded-[1.5rem] flex items-center justify-center text-white font-black text-2xl shadow-xl">
                   {selectedProfile.photoURL ? (
                     <img src={selectedProfile.photoURL} alt="" className="w-full h-full object-cover rounded-[1.5rem]" />
                   ) : (
@@ -362,60 +362,60 @@ const Employees = () => {
                   )}
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase">{selectedProfile.firstName} {selectedProfile.lastName}</h2>
-                  <p className="text-xs font-black text-indigo-500 uppercase tracking-widest">{selectedProfile.position}</p>
+                  <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">{selectedProfile.firstName} {selectedProfile.lastName}</h2>
+                  <p className="text-xs font-black text-indigo-400 uppercase tracking-widest">{selectedProfile.position}</p>
                 </div>
               </div>
               <button 
                 onClick={() => setSelectedProfile(null)}
-                className="p-3 hover:bg-slate-100 rounded-[1.5rem] transition-colors"
+                className="p-3 hover:bg-white/5 rounded-[1.5rem] transition-colors"
               >
-                <X className="w-6 h-6 text-slate-400" />
+                <X className="w-6 h-6 text-white/40" />
               </button>
             </div>
 
             <div className="p-10 space-y-12">
               {/* Quick Vision Section */}
               <div className="grid grid-cols-2 gap-4">
-                 <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                    <div className="flex items-center gap-3 mb-4 text-indigo-600">
+                 <div className="p-6 bg-white/5 rounded-[2rem] border border-white/5">
+                    <div className="flex items-center gap-3 mb-4 text-indigo-400">
                        <Calendar className="w-5 h-5" />
-                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{isRTL ? 'تاريخ التعيين' : 'Hire Date'}</span>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{isRTL ? 'تاريخ التعيين' : 'Hire Date'}</span>
                     </div>
-                    <p className="text-lg font-black text-slate-900 italic">{selectedProfile.hireDate}</p>
+                    <p className="text-lg font-black text-white italic">{selectedProfile.hireDate}</p>
                  </div>
-                 <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100">
-                    <div className="flex items-center gap-3 mb-4 text-emerald-600">
+                 <div className="p-6 bg-white/5 rounded-[2rem] border border-white/5">
+                    <div className="flex items-center gap-3 mb-4 text-emerald-400">
                        <Wallet className="w-5 h-5" />
-                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">{isRTL ? 'الراتب السنوي' : 'Annual Salary'}</span>
+                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">{isRTL ? 'الراتب السنوي' : 'Annual Salary'}</span>
                     </div>
-                    <p className="text-lg font-black text-slate-900 italic">{currency} {(Number(selectedProfile.salary) * 12).toLocaleString()}</p>
+                    <p className="text-lg font-black text-white italic">{currency} {(Number(selectedProfile.salary) * 12).toLocaleString()}</p>
                  </div>
               </div>
 
               {/* Personal Info Hub */}
               <div className="space-y-6">
-                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                    <UserCircle className="w-5 h-5 text-indigo-500" />
+                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
+                    <UserCircle className="w-5 h-5 text-indigo-400" />
                     {isRTL ? 'المعلومات الشخصية' : 'Identity Hub'}
                  </h3>
                  <div className="grid grid-cols-1 gap-4">
-                    <div className="flex items-center justify-between p-6 bg-white border border-slate-100 rounded-[1.5rem] hover:border-indigo-100 transition-all">
+                    <div className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-[1.5rem] hover:border-white/20 transition-all">
                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400"><Mail className="w-5 h-5" /></div>
+                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40"><Mail className="w-5 h-5" /></div>
                           <div>
-                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Email Address</p>
-                             <p className="font-bold text-slate-800">{selectedProfile.email}</p>
+                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Email Address</p>
+                             <p className="font-bold text-white">{selectedProfile.email}</p>
                           </div>
                        </div>
-                       <ExternalLink className="w-4 h-4 text-slate-300" />
+                       <ExternalLink className="w-4 h-4 text-white/20" />
                     </div>
-                    <div className="flex items-center justify-between p-6 bg-white border border-slate-100 rounded-[1.5rem] hover:border-indigo-100 transition-all">
+                    <div className="flex items-center justify-between p-6 bg-white/5 border border-white/5 rounded-[1.5rem] hover:border-white/20 transition-all">
                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400"><Phone className="w-5 h-5" /></div>
+                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40"><Phone className="w-5 h-5" /></div>
                           <div>
-                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phone Line</p>
-                             <p className="font-bold text-slate-800">{selectedProfile.phone}</p>
+                             <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Phone Line</p>
+                             <p className="font-bold text-white">{selectedProfile.phone}</p>
                           </div>
                        </div>
                        <MessageCircle className="w-4 h-4 text-indigo-400" />
@@ -425,11 +425,11 @@ const Employees = () => {
 
               {/* Professional Insights */}
               <div className="space-y-6">
-                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                    <Shield className="w-5 h-5 text-indigo-500" />
+                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
+                    <Shield className="w-5 h-5 text-indigo-400" />
                     {isRTL ? 'المعلومات الوظيفية' : 'Professional Record'}
                  </h3>
-                 <div className="p-8 bg-indigo-900 text-white rounded-[2.5rem] shadow-2xl shadow-indigo-200">
+                 <div className="p-8 bg-indigo-600/20 text-white rounded-[2.5rem] shadow-2xl border border-indigo-500/20">
                     <div className="flex items-center justify-between mb-8">
                        <div className="flex items-center gap-3">
                           <Building2 className="w-6 h-6 text-indigo-300" />
@@ -452,33 +452,32 @@ const Employees = () => {
 
               {/* Performance Indicator */}
               <div className="space-y-6">
-                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-3">
-                    <LineChart className="w-5 h-5 text-indigo-500" />
+                 <h3 className="text-sm font-black text-white uppercase tracking-widest flex items-center gap-3">
+                    <LineChart className="w-5 h-5 text-indigo-400" />
                     {isRTL ? 'إحصائيات الأداء' : 'Success Metrics'}
                  </h3>
                  <div className="grid grid-cols-3 gap-4">
                     {[
-                       { label: 'Attendance', val: '98%', color: 'text-emerald-600' },
-                       { label: 'Efficiency', val: '92%', color: 'text-indigo-600' },
-                       { label: 'Kpis Met', val: '14/15', color: 'text-amber-600' }
+                       { label: 'Attendance', val: '98%', color: 'text-emerald-400' },
+                       { label: 'Efficiency', val: '92%', color: 'text-indigo-400' },
+                       { label: 'Kpis Met', val: '14/15', color: 'text-amber-400' }
                     ].map((stat, i) => (
-                       <div key={i} className="text-center p-6 bg-white border border-slate-100 rounded-[1.5rem]">
+                       <div key={i} className="text-center p-6 bg-white/5 border border-white/5 rounded-[1.5rem]">
                           <p className={`text-xl font-black italic mb-1 ${stat.color}`}>{stat.val}</p>
-                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{stat.label}</p>
+                          <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{stat.label}</p>
                        </div>
                     ))}
                  </div>
               </div>
 
-              {/* Action Zone */}
               <div className="flex gap-4 pt-10">
                  <button 
                    onClick={() => handleEdit(selectedProfile)}
-                   className="flex-1 py-4 bg-slate-900 text-white rounded-[1.5rem] font-bold text-sm tracking-widest uppercase hover:bg-black transition-all active:scale-95"
+                   className="flex-1 py-4 bg-white text-slate-950 rounded-[1.5rem] font-bold text-sm tracking-widest uppercase hover:bg-indigo-50 transition-all active:scale-95 shadow-xl shadow-black/20"
                  >
                     {isRTL ? 'تعديل الملف' : 'Modify Record'}
                  </button>
-                 <button className="flex-1 py-4 bg-indigo-50 text-indigo-600 rounded-[1.5rem] font-bold text-sm tracking-widest uppercase hover:bg-indigo-100 transition-all active:scale-95">
+                 <button className="flex-1 py-4 bg-white/10 text-white rounded-[1.5rem] font-bold text-sm tracking-widest uppercase hover:bg-white/20 transition-all active:scale-95 border border-white/10">
                     {isRTL ? 'عرض المستندات' : 'Vault Access'}
                  </button>
               </div>

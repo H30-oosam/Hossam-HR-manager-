@@ -72,18 +72,18 @@ const Sidebar = () => {
         onClick={() => setSidebarOpen(false)}
       ></div>
 
-      <div className={`fixed top-0 bottom-0 w-72 bg-white/60 backdrop-blur-2xl border-e border-white/40 flex flex-col z-[60] transition-transform duration-300 ease-out lg:translate-x-0 ${
+      <div className={`fixed top-0 bottom-0 w-72 bg-slate-950/40 backdrop-blur-3xl border-e border-white/5 flex flex-col z-[60] transition-transform duration-300 ease-out lg:translate-x-0 ${
         isRTL 
           ? `right-0 ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}` 
           : `left-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
       }`}>
         <div className="p-8 flex flex-col items-center gap-4 border-b border-white/20 mb-2">
-          <div className="w-24 h-24 bg-white rounded-[2rem] flex items-center justify-center text-white shadow-2xl shadow-indigo-200 transition-transform hover:scale-105 duration-300 group cursor-pointer relative overflow-hidden">
+          <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center text-white shadow-2xl transition-transform hover:scale-105 duration-300 group cursor-pointer relative overflow-hidden ring-1 ring-white/10">
             <img src={logoUrl} alt="Logo" className="w-full h-full object-cover opacity-90" />
             <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>
           <div className="text-center">
-            <h2 className="text-xl font-black text-indigo-950 tracking-tighter uppercase italic line-clamp-1">{systemName}</h2>
+            <h2 className="text-xl font-black text-white tracking-tighter uppercase italic line-clamp-1">{systemName}</h2>
             <div className="h-1 w-12 bg-indigo-500 mx-auto rounded-full mt-1 opacity-50"></div>
           </div>
         </div>
@@ -97,8 +97,8 @@ const Sidebar = () => {
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3.5 text-sm font-bold rounded-2xl transition-all ${
                   isActive
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 scale-[1.02]'
-                    : 'text-slate-500 hover:bg-white/60 hover:text-indigo-700'
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50 scale-[1.02]'
+                    : 'text-slate-400 hover:bg-white/10 hover:text-white'
                 }`
               }
             >
@@ -109,12 +109,12 @@ const Sidebar = () => {
         </nav>
 
         <div className="p-6 border-t border-white/20">
-          <div className="mb-4 px-4 py-3 flex items-center gap-3 bg-white/40 rounded-2xl border border-white/80 shadow-sm">
-            <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 font-black flex-shrink-0">
+          <div className="mb-4 px-4 py-3 flex items-center gap-3 bg-white/5 rounded-2xl border border-white/10 shadow-sm">
+            <div className="w-10 h-10 rounded-full bg-indigo-600/30 flex items-center justify-center text-indigo-400 font-black flex-shrink-0 border border-indigo-500/20">
                {user?.displayName?.charAt(0) || 'U'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-black text-indigo-950 truncate uppercase tracking-tight">
+              <p className="text-xs font-black text-white truncate uppercase tracking-tight">
                 {user?.displayName || 'User'}
               </p>
               <p className="text-[10px] text-slate-400 truncate font-black uppercase tracking-widest">

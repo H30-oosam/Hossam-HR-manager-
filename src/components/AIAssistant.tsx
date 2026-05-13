@@ -27,27 +27,27 @@ const AIAssistant = () => {
   };
 
   return (
-    <div className="bg-white/60 backdrop-blur-xl rounded-[2.5rem] border border-white/80 p-8 shadow-2xl shadow-indigo-200/20">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-3 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-2xl text-white shadow-lg shadow-indigo-200">
+    <div className="bg-white/5 backdrop-blur-2xl rounded-[3rem] border border-white/10 p-10 shadow-2xl">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="p-3 bg-gradient-to-tr from-indigo-500 to-purple-500 rounded-2xl text-white shadow-lg">
           <Sparkles className="w-6 h-6" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900">
-            {isRTL ? 'مساعد التوظيف الذكي' : 'AI HR Assistant'}
+          <h3 className="text-xl font-black text-white italic tracking-tighter uppercase">
+            {isRTL ? 'مساعد التوظيف الذكي' : 'Strategic Engine'}
           </h3>
-          <p className="text-sm text-slate-500 font-medium">
+          <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">
             {isRTL ? 'مدعوم من Gemini AI' : 'Powered by Gemini AI'}
           </p>
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {response && (
-          <div className="p-6 bg-white/80 rounded-3xl border border-indigo-100/50 shadow-sm animate-in fade-in slide-in-from-bottom-2">
-            <div className="flex gap-3">
-              <Bot className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-1" />
-              <div className="prose prose-indigo max-w-none prose-sm text-slate-700">
+          <div className="p-8 bg-white/5 rounded-[2rem] border border-white/10 shadow-sm animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex gap-4">
+              <Bot className="w-6 h-6 text-indigo-400 flex-shrink-0 mt-1" />
+              <div className="prose prose-invert prose-indigo max-w-none prose-sm text-slate-300">
                 <Markdown>{response}</Markdown>
               </div>
             </div>
@@ -57,7 +57,7 @@ const AIAssistant = () => {
         <form onSubmit={handleAsk} className="relative mt-4">
           <input
             type="text"
-            className="w-full bg-white/50 border border-white/80 rounded-2xl pl-6 pr-14 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-slate-400"
+            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-10 pr-16 py-5 text-sm text-white focus:outline-none focus:ring-4 focus:ring-white/5 transition-all placeholder:text-white/20 font-bold"
             placeholder={isRTL ? 'اسأل عن سياسات الموارد البشرية، اقتراحات التوظيف...' : 'Ask about HR policies, recruitment tips...'}
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -65,7 +65,7 @@ const AIAssistant = () => {
           <button
             type="submit"
             disabled={loading}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 disabled:opacity-50"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-indigo-600 text-white rounded-xl hover:bg-white hover:text-indigo-900 transition-all shadow-xl shadow-black/10 disabled:opacity-50 active:scale-95"
           >
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className={`w-5 h-5 ${isRTL ? 'rotate-180' : ''}`} />}
           </button>

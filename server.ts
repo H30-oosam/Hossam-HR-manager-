@@ -5,6 +5,10 @@ import helmet from "helmet";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import "express-async-errors";
+
+// Routes
+import statsRoutes from "./src/server/routes/statsRoutes";
 
 dotenv.config();
 
@@ -12,27 +16,27 @@ async function startServer() {
   const app = express();
   const PORT = 3000;
 
-  // Middleware
+  // Security & Middleware
   app.use(helmet({
-    contentSecurityPolicy: false, // Disable for development flexibility
+    contentSecurityPolicy: false,
   }));
   app.use(cors());
   app.use(morgan("dev"));
   app.use(express.json());
 
   // API Routes
+  app.use("/api/stats", statsRoutes);
+
   app.get("/api/health", (req, res) => {
-    res.json({ status: "ok", service: "Hossam HR Backend" });
+    res.json({ status: "ok", service: "Hossam HR Enterprise Backend" });
   });
 
-  // Example API endpoint for stats (Real apps would verify JWT or session)
-  app.get("/api/stats/summary", (req, res) => {
-    // Mock summary for now, usually would query DB via logic or admin SDK
-    res.json({
-      employees: 124,
-      departments: 8,
-      attendanceRate: "94%",
-      openPositions: 12
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("Backend Error:", err);
+    res.status(err.status || 500).json({
+      error: err.message || "Internal Server Error",
+      timestamp: new Date().toISOString()
     });
   });
 
@@ -52,7 +56,7 @@ async function startServer() {
   }
 
   app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`🚀 Professional Backend running on port ${PORT}`);
   });
 }
 

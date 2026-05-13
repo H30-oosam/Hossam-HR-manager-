@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }, [isRTL]);
 
   return (
-    <div className={`min-h-screen flex ${isRTL ? 'rtl' : 'ltr'} bg-slate-50/50`}>
+    <div className={`min-h-screen flex ${isRTL ? 'rtl' : 'ltr'}`}>
       <Sidebar />
       <main className={`flex-1 flex flex-col min-w-0 transition-all duration-300 ${
         isRTL ? 'lg:mr-72' : 'lg:ml-72'

@@ -6,7 +6,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, db, handleFirestoreError, OperationType } from './firebase';
 import { useAuthStore } from './store/authStore';
 import { useUIStore } from './store/uiStore';
@@ -43,14 +43,16 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin shadow-lg"></div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="w-16 h-16 border-8 border-indigo-100 border-t-indigo-600 rounded-full animate-spin"></div>
       </div>
     );
   }
 
-  // Allow entering even without a formal user for this specific request
-  // But we try to set a fallback user if session isn't ready
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
   return <Layout>{children}</Layout>;
 };
 
@@ -60,6 +62,7 @@ export default function App() {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setLoading(true);
       if (firebaseUser) {
         try {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
@@ -73,11 +76,10 @@ export default function App() {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email!,
                 displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0] || 'Admin',
-                role: 'admin',
+                role: firebaseUser.email === 'hossam@admin.com' ? 'super-admin' : 'admin',
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
               };
-              const { setDoc } = await import('firebase/firestore');
               await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
               setUser(newUser as any);
             } else {
@@ -89,16 +91,7 @@ export default function App() {
           setUser(null);
         }
       } else {
-        // Auto-login fallback for Hossam Admin if user landing on page
-        // or just set a mock user to avoid login redirect
-        setUser({
-          uid: 'hossam-demo-uid',
-          email: 'hossam@admin.com',
-          displayName: 'Admin Hossam',
-          role: 'admin',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        });
+        setUser(null);
       }
       setLoading(false);
     });
