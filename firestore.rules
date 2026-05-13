@@ -1,0 +1,121 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ---------------------------------------------------------
+    // 1. SAFETY NET: Default deny
+    // ---------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ---------------------------------------------------------
+    // 2. PRIMITIVES: Global helpers
+    // ---------------------------------------------------------
+    function isSignedIn() { return request.auth != null; }
+    
+    // Bootstrap Admin check
+    function isBootstrapAdmin() {
+      return isSignedIn() && request.auth.token.email in ['hossamelwardany132@gmail.com', 'hossam@admin.com'];
+    }
+    
+    // Primary Admin check
+    function isAdmin() { 
+      return isBootstrapAdmin() || (
+        isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'none') == 'admin'
+      ); 
+    }
+    
+    function isHR() { 
+      return isAdmin() || (
+        isSignedIn() && 
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('role', 'none') == 'hr'
+      ); 
+    }
+    
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isValidId(id) { return id is string && id.size() <= 128; }
+
+    // ---------------------------------------------------------
+    // 3. COLLECTIONS
+    // ---------------------------------------------------------
+
+    // Connectivity test path
+    match /system/connection_test {
+      allow read: if true;
+    }
+
+    // USERS: Only users can see their own profile, admins see all
+    match /users/{userId} {
+      allow get, create: if isOwner(userId);
+      allow list: if isAdmin();
+      allow get: if isAdmin() || isBootstrapAdmin();
+      allow update: if isSignedIn() && ( (isOwner(userId) && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL', 'updatedAt'])) || isAdmin() );
+    }
+
+    // EMPLOYEES: HR/Admins see all, employees see their own
+    match /employees/{employeeId} {
+      allow read: if isSignedIn() && (isHR() || existing().userId == request.auth.uid);
+      allow write: if isHR();
+    }
+
+    // DEPARTMENTS: Everyone signed in can read, HR/Admins write
+    match /departments/{deptId} {
+      allow read: if isSignedIn();
+      allow write: if isHR();
+    }
+
+    // ATTENDANCE: HR sees all, employees see/create their own
+    match /attendance/{atId} {
+      allow read: if isSignedIn() && (isHR() || existing().employeeId == request.auth.uid);
+      allow create: if isSignedIn() && (incoming().employeeId == request.auth.uid || isHR());
+      allow update: if isHR();
+    }
+
+    // LEAVE REQUESTS: HR sees all, employees see/create their own
+    match /leaveRequests/{lrId} {
+      allow read: if isSignedIn() && (isHR() || existing().employeeId == request.auth.uid);
+      allow create: if isSignedIn() && incoming().employeeId == request.auth.uid;
+      allow update: if isHR() || (isOwner(existing().employeeId) && existing().status == 'pending' && incoming().diff(existing()).affectedKeys().hasOnly(['reason', 'startDate', 'endDate', 'type']));
+    }
+
+    // PAYROLL: HR sees all, employees see their own (get only)
+    match /payroll/{pId} {
+      allow read: if isSignedIn() && (isHR() || existing().employeeId == request.auth.uid);
+      allow write: if isHR();
+    }
+
+    // RECRUITMENT (JobPosts & Candidates): HR manages, everyone reads JobPosts
+    match /jobPosts/{jpId} {
+      allow read: if isSignedIn();
+      allow write: if isHR();
+    }
+    match /candidates/{cId} {
+      allow read: if isHR();
+      allow write: if isHR();
+    }
+
+    // PERFORMANCE REVIEWS: HR sees all, reviews see their own
+    match /performanceReviews/{prId} {
+      allow read: if isSignedIn() && (isHR() || existing().employeeId == request.auth.uid);
+      allow write: if isHR();
+    }
+
+    // TRAINING COURSES: Everyone sees, HR manages
+    match /trainingCourses/{tcId} {
+      allow read: if isSignedIn();
+      allow write: if isHR();
+    }
+
+    // NOTIFICATIONS: Only owner can read/update
+    match /notifications/{nId} {
+      allow read: if isSignedIn() && existing().userId == request.auth.uid;
+      allow update: if isSignedIn() && existing().userId == request.auth.uid && incoming().diff(existing()).affectedKeys().hasOnly(['read']);
+      allow create: if isHR() || isAdmin(); 
+    }
+  }
+}
