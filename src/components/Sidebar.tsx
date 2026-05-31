@@ -29,10 +29,12 @@ import { useUIStore } from '../store/uiStore';
 import { useAuthStore } from '../store/authStore';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
+import { HossamLogo } from './HossamLogo';
 
 const Sidebar = () => {
-  const { isRTL, logoUrl, systemName, sidebarOpen, setSidebarOpen } = useUIStore();
+  const { isRTL, systemName, sidebarOpen, setSidebarOpen } = useUIStore();
   const { user } = useAuthStore();
+
 
   const handleSignOut = async () => {
     await signOut(auth);
@@ -77,15 +79,8 @@ const Sidebar = () => {
           ? `right-0 ${sidebarOpen ? 'translate-x-0' : 'translate-x-full'}` 
           : `left-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`
       }`}>
-        <div className="p-8 flex flex-col items-center gap-4 border-b border-white/20 mb-2">
-          <div className="w-24 h-24 bg-white/5 rounded-[2rem] flex items-center justify-center text-white shadow-2xl transition-transform hover:scale-105 duration-300 group cursor-pointer relative overflow-hidden ring-1 ring-white/10">
-            <img src={logoUrl} alt="Logo" className="w-full h-full object-cover opacity-90" />
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </div>
-          <div className="text-center">
-            <h2 className="text-xl font-black text-white tracking-tighter uppercase italic line-clamp-1">{systemName}</h2>
-            <div className="h-1 w-12 bg-indigo-500 mx-auto rounded-full mt-1 opacity-50"></div>
-          </div>
+        <div className="p-6 border-b border-white/10 mb-2 flex justify-center">
+          <HossamLogo size="md" lightText={true} />
         </div>
 
         <nav className="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scrollbar">
