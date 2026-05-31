@@ -9,6 +9,7 @@ import "express-async-errors";
 
 // Routes
 import statsRoutes from "./src/server/routes/statsRoutes";
+import authRoutes from "./src/server/routes/authRoutes";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ async function startServer() {
 
   // API Routes
   app.use("/api/stats", statsRoutes);
+  app.use("/api/auth", authRoutes);
 
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok", service: "Hossam HR Enterprise Backend" });

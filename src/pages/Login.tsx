@@ -90,30 +90,43 @@ const Login = () => {
         try {
           result = await signInWithEmailAndPassword(auth, email, password);
         } catch (signInErr: any) {
-          if ((signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential') && email === 'hossam@admin.com') {
-            result = await createUserWithEmailAndPassword(auth, email, password);
-            const newUser = {
-              uid: result.user.uid,
-              email: result.user.email!,
-              displayName: 'Admin Hossam',
-              role: 'super-admin',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-            };
-            await setDoc(doc(db, 'users', result.user.uid), newUser);
-            setUser(newUser as any);
-            navigate('/');
-            return;
+          // If login fails and it's the bootstrap admin credentials, try to register it client-side
+          if (email === 'hossam@admin.com' && password === '1321994' && (signInErr.code === 'auth/user-not-found' || signInErr.code === 'auth/invalid-credential')) {
+            try {
+              result = await createUserWithEmailAndPassword(auth, email, password);
+            } catch (createErr) {
+              throw signInErr; // throw original if registration also fails
+            }
+          } else {
+            throw signInErr;
           }
-          throw signInErr;
         }
+
         try {
           const userDoc = await getDoc(doc(db, 'users', result.user.uid));
           if (userDoc.exists()) {
-            setUser(userDoc.data() as any);
+            const data = userDoc.data();
+            // Ensure hossam@admin.com always gets the 'super-admin' role
+            if (result.user.email === 'hossam@admin.com' && data.role !== 'super-admin') {
+              data.role = 'super-admin';
+              await setDoc(doc(db, 'users', result.user.uid), data, { merge: true });
+            }
+            setUser(data as any);
+          } else {
+            // Restore or create profile if doc is missing
+            const restoredUser = {
+              uid: result.user.uid,
+              email: result.user.email!,
+              displayName: result.user.email === 'hossam@admin.com' ? 'Admin Hossam' : (result.user.displayName || result.user.email?.split('@')[0] || 'User'),
+              role: (result.user.email === 'hossam@admin.com') ? 'super-admin' : (['hossamelwardany132@gmail.com'].includes(result.user.email || '') ? 'admin' : 'employee'),
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            await setDoc(doc(db, 'users', result.user.uid), restoredUser);
+            setUser(restoredUser as any);
           }
         } catch (err) {
-          console.error("Error fetching profile on login:", err);
+          console.error("Error fetching or creating profile on login:", err);
         }
       }
       navigate('/');

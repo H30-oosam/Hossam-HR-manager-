@@ -24,6 +24,33 @@ const Tasks = () => {
     assignedTo: '',
   });
 
+  const getDueStatus = (dueDateStr: string, status: string) => {
+    if (status === 'done' || !dueDateStr) return null;
+    
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    
+    if (dueDateStr < todayStr) {
+      return 'overdue';
+    }
+    
+    if (dueDateStr === todayStr) {
+      return 'due-soon';
+    }
+    
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    if (dueDateStr === tomorrowStr) {
+      const dueTime = new Date(dueDateStr + 'T23:59:59').getTime();
+      if (dueTime - now.getTime() <= 24 * 60 * 60 * 1000) {
+        return 'due-soon';
+      }
+    }
+    
+    return null;
+  };
+
   useEffect(() => {
     const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -94,44 +121,69 @@ const Tasks = () => {
         <div className="divide-y divide-gray-100">
           {loading ? (
             <div className="p-20 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-indigo-600" /></div>
-          ) : tasks.map((task) => (
-            <div key={task.id} className="p-5 flex items-center justify-between hover:bg-white/40 transition-colors group">
-              <div className="flex items-center gap-4">
-                <button 
-                  onClick={() => toggleTask(task.id, task.status)}
-                  className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
-                    task.status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200 text-transparent hover:border-indigo-400'
-                  }`}
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                </button>
-                <div>
-                  <h4 className={`text-sm font-bold transition-all ${task.status === 'done' ? 'text-slate-300 line-through' : 'text-slate-800'}`}>
-                    {task.title}
-                  </h4>
-                  <div className="flex items-center gap-3 mt-1">
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
-                      <Clock className="w-3 h-3" />
-                      {task.dueDate}
-                    </div>
-                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
-                      task.priority === 'high' ? 'bg-rose-50 text-rose-600' : 'bg-indigo-50 text-indigo-600'
+          ) : tasks.map((task) => {
+            const dueStatus = getDueStatus(task.dueDate, task.status);
+            const rowClass = dueStatus === 'overdue'
+              ? 'p-5 flex items-center justify-between bg-rose-500/10 border-s-4 border-s-rose-500 hover:bg-rose-500/15 transition-all group'
+              : dueStatus === 'due-soon'
+              ? 'p-5 flex items-center justify-between bg-amber-500/10 border-s-4 border-s-amber-500 hover:bg-amber-500/15 transition-all group'
+              : 'p-5 flex items-center justify-between hover:bg-white/5 transition-colors group';
+
+            return (
+              <div key={task.id} className={rowClass}>
+                <div className="flex items-center gap-4">
+                  <button 
+                    onClick={() => toggleTask(task.id, task.status)}
+                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                      task.status === 'done' ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-slate-200 text-transparent hover:border-indigo-400'
+                    }`}
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                  </button>
+                  <div>
+                    <h4 className={`text-sm font-bold transition-all flex items-center gap-2 ${
+                      task.status === 'done' 
+                        ? 'text-slate-400 line-through' 
+                        : dueStatus === 'overdue' 
+                        ? 'text-rose-100 hover:text-rose-50' 
+                        : dueStatus === 'due-soon' 
+                        ? 'text-amber-100 hover:text-amber-50' 
+                        : 'text-slate-100 hover:text-white'
                     }`}>
-                      {task.priority}
-                    </span>
+                      <span>{task.title}</span>
+                      {dueStatus && (
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider ${
+                          dueStatus === 'overdue' ? 'bg-rose-500/20 text-rose-300' : 'bg-amber-500/20 text-amber-300'
+                        }`}>
+                          <AlertCircle className="w-3 h-3 animate-pulse" />
+                          {dueStatus === 'overdue' ? (isRTL ? 'متأخر' : 'Overdue') : (isRTL ? 'قريباً' : 'Due Soon')}
+                        </span>
+                      )}
+                    </h4>
+                    <div className="flex items-center gap-3 mt-1">
+                      <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-tighter">
+                        <Clock className="w-3 h-3" />
+                        {task.dueDate}
+                      </div>
+                      <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
+                        task.priority === 'high' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                      }`}>
+                        {task.priority}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-                  <User className="w-4 h-4" />
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all">
+                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-slate-400 border border-white/10">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <button onClick={() => deleteTask(task.id)} className="p-2 text-slate-400 hover:text-rose-400 transition-colors">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-                <button onClick={() => deleteTask(task.id)} className="p-2 text-slate-300 hover:text-rose-600 transition-colors">
-                  <Trash2 className="w-4 h-4" />
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
